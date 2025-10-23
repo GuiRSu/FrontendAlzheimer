@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontendalzheimer/models/user_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../viewmodels/auth_viewmodel.dart';
 import '../models/register_request.dart';
@@ -48,18 +49,13 @@ class AuthProvider with ChangeNotifier {
     final success = await _authViewModel.login(username, password);
 
     if (success && _authViewModel.currentUser != null) {
-      final user = _authViewModel.currentUser!;
-
-      // Guardar en SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_authKey, true);
-      await prefs.setString(_roleKey, _mapUserType(user.tipoUsuario));
-      await prefs.setString(_nameKey, user.nombre ?? user.username);
-      // await prefs.setString(_tokenKey, token); // Guardar token si lo tienes
+      await _saveAuthData(_authViewModel.token!, _authViewModel.currentUser!);
 
       _isLoggedIn = true;
-      _userRole = _mapUserType(user.tipoUsuario);
-      _userName = user.nombre ?? user.username;
+      _userRole = _mapUserType(_authViewModel.currentUser!.tipoUsuario);
+      _userName =
+          _authViewModel.currentUser!.nombre ??
+          _authViewModel.currentUser!.username;
 
       notifyListeners();
       return true;
@@ -67,11 +63,30 @@ class AuthProvider with ChangeNotifier {
     return false;
   }
 
+  Future<void> _saveAuthData(String token, UserResponse user) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_authKey, true);
+      await prefs.setString(_roleKey, _mapUserType(user.tipoUsuario));
+      await prefs.setString(_nameKey, user.nombre ?? user.username);
+      await prefs.setString(_tokenKey, token); // GUARDAR TOKEN
+
+      print('Token guardado: ${token.substring(0, 20)}...'); // Debug
+    } catch (e) {
+      print('Error guardando auth data: $e');
+      throw e;
+    }
+  }
+
+  Future<String> get debugToken {
+    final prefs = SharedPreferences.getInstance();
+    return prefs.then((prefs) => prefs.getString(_tokenKey) ?? 'No token');
+  }
+
   Future<bool> register(RegisterRequest request) async {
     final success = await _authViewModel.register(request);
 
     if (success && _authViewModel.currentUser != null) {
-      // Auto-login
       return await login(request.username, request.password);
     }
     return false;

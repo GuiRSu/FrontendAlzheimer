@@ -11,31 +11,12 @@ class AuthViewModel with ChangeNotifier {
   bool _isLoading = false;
   String _errorMessage = '';
   UserResponse? _currentUser;
+  String? _token;
 
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   UserResponse? get currentUser => _currentUser;
-
-  // Mapeo de tipos de usuario del backend a Flutter
-  /*
-  String _mapUserType(String tipoUsuario) {
-    switch (tipoUsuario) {
-      case 'paciente':
-        return 'Paciente';
-      case 'medico':
-        return 'Doctor';
-      case 'admin':
-        return 'Admin';
-      case 'cuidador':
-        return 'Cuidador';
-      default:
-        return 'Paciente';
-    }
-  }
-*/
-  String _token = '';
-
-  String get token => _token;
+  String? get token => _token;
 
   Future<bool> login(String username, String password) async {
     _isLoading = true;
@@ -46,11 +27,10 @@ class AuthViewModel with ChangeNotifier {
       final request = LoginRequest(username: username, password: password);
       final AuthResponse authResponse = await _authRepository.login(request);
 
-      // guardar token
+      // Guardar token
       _token = authResponse.accessToken;
 
-      // infor del usuario
-      _currentUser = await _authRepository.getCurrentUser(_token);
+      _currentUser = await _authRepository.getCurrentUser(_token!);
 
       _isLoading = false;
       notifyListeners();

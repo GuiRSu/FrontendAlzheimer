@@ -6,6 +6,7 @@ import 'views/auth/login_auth.dart';
 import 'views/paciente/dashboard_paciente.dart';
 import 'views/doctor/dashboard_doctor.dart';
 import 'views/admin/dashboard_admin.dart';
+import 'viewmodels/diagnostico_viewmodel.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => DiagnosticoViewModel()),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {

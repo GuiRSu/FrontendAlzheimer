@@ -410,6 +410,17 @@ class _RegisterState extends State<Register> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value != null && value.isNotEmpty) {
+                    final emailRegex = RegExp(
+                      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                    );
+                    if (!emailRegex.hasMatch(value)) {
+                      return 'Ingresa un email válido (ej: usuario@dominio.com)';
+                    }
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 16),
               TextFormField(

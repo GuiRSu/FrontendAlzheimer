@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  String localdir = 'http://localhost:8000';
-  String publicdir = 'https://backendalzheimer.onrender.com';
-  static const String baseUrl = 'https://backendalzheimer.onrender.com';
+  static const String local = 'http://localhost:8000';
+  static const String fisico = 'http://192.168.18.8:8000';
+  static const String produccion = 'https://backendalzheimer.onrender.com';
+
+  static String baseUrl = fisico;
 
   static Future<http.Response> post(
     String endpoint,
