@@ -16,6 +16,9 @@ dependencies:
   http: ^1.5.0
   intl: ^0.18.1
 
+  image_picker_for_web: any
+  cross_file: ^0.3.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -3,10 +3,9 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   static const String local = 'http://localhost:8000';
-  static const String fisico = 'http://192.168.18.8:8000';
   static const String produccion = 'https://backendalzheimer.onrender.com';
 
-  static String baseUrl = fisico;
+  static String baseUrl = local;
 
   static Future<http.Response> post(
     String endpoint,

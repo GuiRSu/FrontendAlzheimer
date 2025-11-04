@@ -34,7 +34,7 @@ class DiagnosticoViewModel with ChangeNotifier {
 
     try {
       final resultado = await DiagnosticoService.analizarImagen(imagen);
-      // Recargar la lista después de un nuevo análisis
+      // Recargar lista
       await cargarDiagnosticos();
       return resultado;
     } catch (e) {

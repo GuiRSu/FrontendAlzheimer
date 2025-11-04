@@ -30,10 +30,10 @@ class DiagnosticoService {
 
       request.headers['Authorization'] = 'Bearer $token';
 
-      // Agregar archivo
+      // archivo
       request.files.add(
         await http.MultipartFile.fromPath(
-          'file', // coincidir con el backend
+          'file',
           imageFile.path,
           filename: 'imagen_${DateTime.now().millisecondsSinceEpoch}.jpg',
         ),
