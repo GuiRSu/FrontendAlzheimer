@@ -1,7 +1,7 @@
-name: frontendalzheimer
+name: alzhecare
 description: "A new Flutter project."
 publish_to: "none"
-version: 0.1.0
+version: 1.0.0
 
 environment:
   sdk: ^3.8.1
@@ -18,11 +18,22 @@ dependencies:
 
   image_picker_for_web: any
   cross_file: ^0.3.3
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+assets:
+  - assets/images/
+  - assets/images/icon.png
 
 flutter:
   uses-material-design: true
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icon.png"
+  adaptive_icon_background: "#2563EB"
+  adaptive_icon_foreground: "assets/images/icon.png"

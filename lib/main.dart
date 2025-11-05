@@ -1,49 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'providers/theme_provider.dart';
-import 'providers/auth_provider.dart';
-import 'views/auth/login_auth.dart';
-import 'views/paciente/dashboard_paciente.dart';
-import 'views/doctor/dashboard_doctor.dart';
-import 'views/admin/dashboard_admin.dart';
-import 'viewmodels/diagnostico_viewmodel.dart';
+
+import 'data/providers/auth_provider.dart';
+import 'data/providers/theme_provider.dart';
+import 'data/providers/diagnostico_provider.dart';
+
+import 'features/auth/login_auth.dart';
+import 'features/admin/dashboard_admin.dart';
+import 'features/doctor/dashboard_doctor.dart';
+import 'features/paciente/dashboard_paciente.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => AuthProvider()),
-        ChangeNotifierProvider(create: (context) => DiagnosticoViewModel()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => DiagnosticoProvider()),
       ],
-      child: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) {
-          if (authProvider.isLoading) {
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              home: Scaffold(body: Center(child: CircularProgressIndicator())),
-            );
-          }
-
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
           return MaterialApp(
+            title: 'AlzheimerCare',
+            theme: themeProvider.currentTheme,
             debugShowCheckedModeBanner: false,
-            title: "AlzheimerCare",
-            theme: ThemeData.light(),
-            home: authProvider.isLoggedIn
-                ? _getDashboardByRole(authProvider.userRole)
-                : Login(),
+            home: Consumer<AuthProvider>(
+              builder: (context, authProvider, child) {
+                if (authProvider.isLoading) {
+                  return Scaffold(
+                    backgroundColor:
+                        themeProvider.currentTheme.scaffoldBackgroundColor,
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                return authProvider.isLoggedIn
+                    ? _buildDashboardByRole(authProvider.userRole)
+                    : Login();
+              },
+            ),
           );
         },
       ),
     );
   }
 
-  Widget _getDashboardByRole(String role) {
+  Widget _buildDashboardByRole(String role) {
     switch (role) {
       case 'Paciente':
         return DashboardPaciente();
@@ -51,10 +59,8 @@ class MyApp extends StatelessWidget {
         return DashboardDoctor();
       case 'Admin':
         return DashboardAdmin();
-      case 'Cuidador':
-        return DashboardPaciente(); // Temporal - falta dashboard para cuidador (?)
       default:
-        return Login();
+        return DashboardPaciente();
     }
   }
 }
