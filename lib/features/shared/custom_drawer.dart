@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/providers/auth_provider.dart';
 import '../auth/login_auth.dart';
+import '../paciente/historial_diagnosticos.dart';
 import '../paciente/subir_imagen.dart';
 import '../paciente/dashboard_paciente.dart';
 import '../doctor/dashboard_doctor.dart';
@@ -81,7 +82,10 @@ class MainDrawer extends StatelessWidget {
               title: 'Historial de Diagnósticos',
               onTap: () {
                 Navigator.pop(context);
-                // Pendiente: historial
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => HistorialDiagnosticos()),
+                );
               },
             ),
           ],

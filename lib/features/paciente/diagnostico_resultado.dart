@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../data/models/diagnostico_model.dart';
+import 'historial_diagnosticos.dart';
 
 class DiagnosticoResultado extends StatelessWidget {
   final File imagen;
@@ -354,14 +355,20 @@ class DiagnosticoResultado extends StatelessWidget {
           children: [
             Text("Resultado: ${resultado.resultado}"),
             Text("Confianza: ${resultado.confianza}"),
-            if (resultado.outputImage != null)
-              Text("Imagen procesada: Disponible"),
-            if (resultado.dynamicCrop != null) Text("Segmentación: Disponible"),
             SizedBox(height: 10),
             Text(
               "Modelo: CNN - Alzheimer Detection",
               style: TextStyle(fontStyle: FontStyle.italic),
             ),
+            SizedBox(height: 10),
+            if (resultado.datosRoboflow != null)
+              Text(
+                "Datos técnicos disponibles",
+                style: TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
           ],
         ),
         actions: [
@@ -375,10 +382,10 @@ class DiagnosticoResultado extends StatelessWidget {
   }
 
   void _verHistorial(BuildContext context) {
-    // Navegar a historial
-    ScaffoldMessenger.of(
+    Navigator.push(
       context,
-    ).showSnackBar(SnackBar(content: Text('Funcionalidad en desarrollo')));
+      MaterialPageRoute(builder: (_) => HistorialDiagnosticos()),
+    );
   }
 
   void _compartirResultados(BuildContext context) {

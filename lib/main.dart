@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'core/widgets/splash_screen.dart';
+
 import 'data/providers/auth_provider.dart';
 import 'data/providers/theme_provider.dart';
 import 'data/providers/diagnostico_provider.dart';
@@ -28,27 +30,56 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
-            title: 'AlzheimerCare',
+            title: 'AlzheCare',
             theme: themeProvider.currentTheme,
             debugShowCheckedModeBanner: false,
-            home: Consumer<AuthProvider>(
-              builder: (context, authProvider, child) {
-                if (authProvider.isLoading) {
-                  return Scaffold(
-                    backgroundColor:
-                        themeProvider.currentTheme.scaffoldBackgroundColor,
-                    body: Center(child: CircularProgressIndicator()),
-                  );
-                }
-                return authProvider.isLoggedIn
-                    ? _buildDashboardByRole(authProvider.userRole)
-                    : Login();
-              },
-            ),
+            home: SplashWrapper(), // <-- Cambia aquí
           );
         },
       ),
     );
+  }
+}
+
+// Nuevo widget para manejar el splash y la navegación posterior
+class SplashWrapper extends StatefulWidget {
+  @override
+  State<SplashWrapper> createState() => _SplashWrapperState();
+}
+
+class _SplashWrapperState extends State<SplashWrapper> {
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initApp();
+  }
+
+  Future<void> _initApp() async {
+    await Future.delayed(Duration(seconds: 2)); // Simula carga
+    setState(() {
+      _initialized = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_initialized) {
+      return SplashScreen();
+    }
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    if (authProvider.isLoading) {
+      return Scaffold(
+        backgroundColor: themeProvider.currentTheme.scaffoldBackgroundColor,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    return authProvider.isLoggedIn
+        ? _buildDashboardByRole(authProvider.userRole)
+        : Login();
   }
 
   Widget _buildDashboardByRole(String role) {
@@ -64,3 +95,4 @@ class MyApp extends StatelessWidget {
     }
   }
 }
+// ...existing code...

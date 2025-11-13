@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/services/api_service.dart';
 import '../../data/providers/auth_provider.dart';
 import '../paciente/dashboard_paciente.dart';
 import '../doctor/dashboard_doctor.dart';
@@ -16,6 +17,19 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  String _currentBackend = 'Cargando...';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentBackend();
+  }
+
+  void _loadCurrentBackend() {
+    setState(() {
+      _currentBackend = ApiService.getCurrentUrlName();
+    });
+  }
 
   void _handleLogin(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -64,6 +78,84 @@ class _LoginState extends State<Login> {
     );
   }
 
+  void _showBackendSelector(BuildContext context) {
+    final Map<String, String> availableUrls = ApiService.getAvailableUrls();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.settings, color: Colors.blue),
+              SizedBox(width: 8),
+              Text('Seleccionar Backend'),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: availableUrls.entries.map((entry) {
+                final isSelected = ApiService.baseUrl == entry.value;
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: 4),
+                  color: isSelected ? Colors.blue[50] : Colors.white,
+                  child: ListTile(
+                    leading: Icon(
+                      isSelected
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                      color: isSelected ? Colors.green : Colors.grey,
+                    ),
+                    title: Text(
+                      entry.key,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? Colors.blue[700] : Colors.black,
+                      ),
+                    ),
+                    subtitle: Text(
+                      entry.value,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isSelected ? Colors.blue[600] : Colors.grey[600],
+                      ),
+                    ),
+                    onTap: () {
+                      _changeBackendUrl(entry.value, context);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _changeBackendUrl(String newUrl, BuildContext context) async {
+    await ApiService.changeBaseUrl(newUrl);
+    setState(() {
+      _currentBackend = ApiService.getCurrentUrlName();
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Backend cambiado a: $_currentBackend'),
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -75,6 +167,34 @@ class _LoginState extends State<Login> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                // Botón discreto en la esquina superior derecha
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 20),
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showBackendSelector(context),
+                      icon: Icon(Icons.settings, size: 16),
+                      label: Text(
+                        _currentBackend,
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        backgroundColor: Colors.grey[200],
+                        foregroundColor: Colors.blue[700],
+                        elevation: 1,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
                 Icon(Icons.memory, size: 80, color: Colors.blue),
                 SizedBox(height: 20),
                 Text(
@@ -116,7 +236,6 @@ class _LoginState extends State<Login> {
                 ),
                 SizedBox(height: 20),
 
-                // ✅ CORREGIDO: Usar isLoading en lugar de authLoading
                 if (authProvider.isLoading)
                   CircularProgressIndicator()
                 else

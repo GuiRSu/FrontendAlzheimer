@@ -32,7 +32,7 @@ class SplashScreen extends StatelessWidget {
 
             // Nombre
             const Text(
-              'AlzheimerCare',
+              'AlzheCare',
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -50,11 +50,6 @@ class SplashScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 40),
-
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              strokeWidth: 3,
-            ),
           ],
         ),
       ),

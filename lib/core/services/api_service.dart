@@ -8,17 +8,58 @@ class ApiService {
   static const String fisico = 'http://192.168.18.8:8000';
   static const String produccion = 'https://backendalzheimer.onrender.com';
 
-  static String baseUrl = fisico;
+  static String get baseUrl => _currentUrl;
+  static String _currentUrl = fisico;
+
+  static const String _urlKey = 'selectedBackendUrl';
+
+  static Future<void> initialize() async {
+    final prefs = await SharedPreferences.getInstance();
+    _currentUrl = prefs.getString(_urlKey) ?? fisico;
+  }
+
+  static Future<void> changeBaseUrl(String newUrl) async {
+    _currentUrl = newUrl;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_urlKey, newUrl);
+  }
+
+  static Map<String, String> getAvailableUrls() {
+    return {'Local': local, 'Físico': fisico, 'Producción': produccion};
+  }
+
+  static String getCurrentUrlName() {
+    final urls = getAvailableUrls();
+    return urls.entries
+        .firstWhere(
+          (entry) => entry.value == _currentUrl,
+          orElse: () => MapEntry('Personalizado', _currentUrl),
+        )
+        .key;
+  }
 
   static Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('authToken');
   }
 
-  static Future<http.Response> get(String endpoint) async {
+  // CORREGIDO: Método GET con parámetros de query
+  static Future<http.Response> get(
+    String endpoint, {
+    Map<String, String>? queryParams,
+  }) async {
     final token = await _getToken();
+
+    // Construir URI con parámetros de query
+    Uri uri = Uri.parse('$baseUrl$endpoint');
+    if (queryParams != null && queryParams.isNotEmpty) {
+      uri = uri.replace(queryParameters: queryParams);
+    }
+
+    print('🔗 GET Request: $uri');
+
     return await http.get(
-      Uri.parse('$baseUrl$endpoint'),
+      uri,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
