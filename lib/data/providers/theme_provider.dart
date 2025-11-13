@@ -124,25 +124,3 @@ class ThemeProvider with ChangeNotifier {
     ),
   );
 }
-/*
-  static final ThemeData _lightTheme = ThemeData(
-    primarySwatch: Colors.lightBlue,
-    brightness: Brightness.light,
-    scaffoldBackgroundColor: Colors.white,
-    appBarTheme: AppBarTheme(
-      backgroundColor: Colors.blue,
-      foregroundColor: Colors.white,
-    ),
-  );
-
-  static final ThemeData _darkTheme = ThemeData(
-    primarySwatch: Colors.lightBlue,
-    brightness: Brightness.dark,
-    scaffoldBackgroundColor: Colors.grey[900],
-    appBarTheme: AppBarTheme(
-      backgroundColor: Colors.grey[800],
-      foregroundColor: Colors.white,
-    ),
-  );
-}
-*/

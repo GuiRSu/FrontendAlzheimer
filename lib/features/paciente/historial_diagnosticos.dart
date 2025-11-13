@@ -49,6 +49,13 @@ class _HistorialDiagnosticosState extends State<HistorialDiagnosticos> {
         title: const Text('Historial de Diagnósticos'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.bug_report),
+            onPressed: _testUrls,
+            tooltip: 'Testear URLs',
+          ),
+        ],
       ),
       body: Consumer<DiagnosticoProvider>(
         builder: (context, provider, child) {
@@ -174,5 +181,73 @@ class _HistorialDiagnosticosState extends State<HistorialDiagnosticos> {
         builder: (_) => DetalleDiagnostico(diagnosticoId: diagnosticoId),
       ),
     );
+  }
+
+  void _testUrls() {
+    final provider = Provider.of<DiagnosticoProvider>(context, listen: false);
+
+    if (provider.diagnosticos.isNotEmpty) {
+      // Testear la primera imagen
+      final primerDiagnostico = provider.diagnosticos.first;
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Test URL Imagen'),
+          content: FutureBuilder<Map<String, dynamic>>(
+            future: provider.testUrlImagen(primerDiagnostico.id),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 10),
+                    Text('Testeando URL...'),
+                  ],
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              }
+
+              final result = snapshot.data!;
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('URL: ${result['url']}'),
+                  SizedBox(height: 10),
+                  Text('Status: ${result['status_code']}'),
+                  Text('Accesible: ${result['accessible']}'),
+                  if (result['error'] != null)
+                    Text('Error: ${result['error']}'),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cerrar'),
+            ),
+            if (provider.diagnosticos.isNotEmpty)
+              TextButton(
+                onPressed: () {
+                  // Abrir URL en navegador
+                  final url = provider.diagnosticos.first.imagenOriginalUrl;
+                  if (url != null && url.isNotEmpty) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text('URL: $url')));
+                  }
+                },
+                child: Text('Abrir URL'),
+              ),
+          ],
+        ),
+      );
+    }
   }
 }

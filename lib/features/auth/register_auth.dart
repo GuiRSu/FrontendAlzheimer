@@ -20,7 +20,6 @@ class _RegisterState extends State<Register> {
   final _emailController = TextEditingController();
   final _telefonoController = TextEditingController();
 
-  // Campos específicos por tipo de usuario
   final _fechaNacimientoController = TextEditingController();
   final _generoController = TextEditingController();
   final _numeroIdentidadController = TextEditingController();
@@ -357,7 +356,7 @@ class _RegisterState extends State<Register> {
               Text("Únete a AlzheimerCare"),
               SizedBox(height: 20),
 
-              // Campos básicos
+              // Campos basicos
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
@@ -484,12 +483,12 @@ class _RegisterState extends State<Register> {
                   ? CircularProgressIndicator()
                   : ElevatedButton(
                       onPressed: () => _handleRegister(context),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(double.infinity, 50),
+                      ),
                       child: Text(
                         "Crear Cuenta",
                         style: TextStyle(fontSize: 16),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(double.infinity, 50),
                       ),
                     ),
 

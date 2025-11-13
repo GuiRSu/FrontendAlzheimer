@@ -58,7 +58,7 @@ class DiagnosticoCard extends StatelessWidget {
 
               const SizedBox(width: 16),
 
-              // Información del diagnóstico
+              // Info del diagnostico
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +85,7 @@ class DiagnosticoCard extends StatelessWidget {
                 ),
               ),
 
-              // Flecha de navegación
+              // nav
               Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
             ],
           ),

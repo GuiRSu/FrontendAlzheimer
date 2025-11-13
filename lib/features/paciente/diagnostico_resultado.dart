@@ -163,7 +163,7 @@ class DiagnosticoResultado extends StatelessWidget {
                       ),
                     ),
                   ),
-                  ButtonBar(
+                  OverflowBar(
                     children: [
                       TextButton.icon(
                         onPressed: () => _verDetallesIA(context),
@@ -389,7 +389,6 @@ class DiagnosticoResultado extends StatelessWidget {
   }
 
   void _compartirResultados(BuildContext context) {
-    //  compartir resultados
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Compartir resultados - En desarrollo')),
     );

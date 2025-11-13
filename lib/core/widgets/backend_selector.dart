@@ -32,7 +32,7 @@ class _BackendSelectorState extends State<BackendSelector> {
       _selectedUrl = newUrl;
     });
 
-    // Mostrar mensaje de confirmación
+    // Mostrar confirmacion
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Backend cambiado a: ${ApiService.getCurrentUrlName()}'),
@@ -131,7 +131,7 @@ class _BackendSelectorState extends State<BackendSelector> {
               ),
             ),
             const SizedBox(height: 16),
-            // Botón de prueba de conexión
+            // btn de prueba de con
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -159,14 +159,12 @@ class _BackendSelectorState extends State<BackendSelector> {
     );
 
     try {
-      final response = await ApiService.get(
-        '/health',
-      ); // Ajusta este endpoint según tu API
+      final response = await ApiService.get('/health');
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ Conexión exitosa'),
+            content: Text('Conexión exitosa'),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 3),
           ),
@@ -183,7 +181,7 @@ class _BackendSelectorState extends State<BackendSelector> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('❌ Error de conexión: $e'),
+          content: Text('Error de conexión: $e'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),

@@ -66,7 +66,7 @@ class _DetalleDiagnosticoState extends State<DetalleDiagnostico> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle del Diagnóstico'),
-        backgroundColor: const Color.fromARGB(255, 179, 219, 252),
+        backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -99,7 +99,7 @@ class _DetalleDiagnosticoState extends State<DetalleDiagnostico> {
               children: [
                 _buildResultadoCard(diagnostico),
                 const SizedBox(height: 20),
-                _buildImagenesSection(diagnostico), // Solo imagen original
+                _buildImagenesSection(diagnostico),
                 const SizedBox(height: 20),
                 _buildDetallesTecnicos(diagnostico),
                 const SizedBox(height: 20),

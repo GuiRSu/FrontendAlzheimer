@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
             title: 'AlzheCare',
             theme: themeProvider.currentTheme,
             debugShowCheckedModeBanner: false,
-            home: SplashWrapper(), // <-- Cambia aquí
+            home: SplashWrapper(),
           );
         },
       ),
@@ -41,7 +41,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Nuevo widget para manejar el splash y la navegación posterior
 class SplashWrapper extends StatefulWidget {
   @override
   State<SplashWrapper> createState() => _SplashWrapperState();
@@ -57,7 +56,7 @@ class _SplashWrapperState extends State<SplashWrapper> {
   }
 
   Future<void> _initApp() async {
-    await Future.delayed(Duration(seconds: 2)); // Simula carga
+    await Future.delayed(Duration(seconds: 3)); // Simula carga
     setState(() {
       _initialized = true;
     });
@@ -95,4 +94,3 @@ class _SplashWrapperState extends State<SplashWrapper> {
     }
   }
 }
-// ...existing code...

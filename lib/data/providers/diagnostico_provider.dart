@@ -12,8 +12,6 @@ class DiagnosticoProvider with ChangeNotifier {
   bool _isLoadingDetalle = false;
   String _errorMessage = '';
 
-  // Paginación
-  int _currentPage = 1;
   bool _hasMore = true;
 
   List<Diagnostico> get diagnosticos => _diagnosticos;
@@ -26,57 +24,46 @@ class DiagnosticoProvider with ChangeNotifier {
 
   Future<void> cargarHistorial({bool loadMore = false}) async {
     if (!loadMore) {
-      _currentPage = 1;
       _diagnosticos.clear();
       _hasMore = true;
     }
-
-    if (!_hasMore && loadMore) return;
 
     _isLoadingHistorial = true;
     _errorMessage = '';
     notifyListeners();
 
     try {
-      final response = await ApiService.get(
-        '/api/diagnosticos/historial',
-        queryParams: {'page': _currentPage.toString(), 'per_page': '10'},
-      );
+      final response = await ApiService.get('/api/diagnosticos/historial');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+        print('🔍 Response completo: $responseData');
 
-        // Manejar diferentes formatos de respuesta
+        // formato de respuesta
         if (responseData is Map<String, dynamic>) {
-          // Si es un mapa, asumimos que es el formato de historial
-          final historialResponse = HistorialResponse.fromJson(responseData);
+          if (responseData.containsKey('diagnosticos')) {
+            final diagnosticosList = (responseData['diagnosticos'] as List)
+                .map((item) => Diagnostico.fromJson(item))
+                .toList();
 
-          if (loadMore) {
-            _diagnosticos.addAll(historialResponse.diagnosticos);
-          } else {
-            _diagnosticos = historialResponse.diagnosticos;
+            if (loadMore) {
+              _diagnosticos.addAll(diagnosticosList);
+            } else {
+              _diagnosticos = diagnosticosList;
+            }
+
+            // Debug de URLs
+            print('🖼️ URLs de imágenes encontradas:');
+            for (var i = 0; i < _diagnosticos.length; i++) {
+              final diagnostico = _diagnosticos[i];
+              print(
+                '   ${i + 1}. ID ${diagnostico.id}: ${diagnostico.imagenOriginalUrl}',
+              );
+            }
           }
-
-          _currentPage = historialResponse.pagination.page;
-          _hasMore = historialResponse.pagination.hasNext;
-        } else if (responseData is List) {
-          // Si es una lista directa (formato antiguo)
-          final diagnosticosList = (responseData)
-              .map((item) => Diagnostico.fromJson(item))
-              .toList();
-
-          if (loadMore) {
-            _diagnosticos.addAll(diagnosticosList);
-          } else {
-            _diagnosticos = diagnosticosList;
-          }
-
-          _hasMore =
-              diagnosticosList.length >=
-              10; // Asumir que hay más si llegamos al límite
         }
 
-        print('✅ Historial cargado: ${_diagnosticos.length} diagnósticos');
+        print('Historial cargado: ${_diagnosticos.length} diagnósticos');
       } else {
         throw Exception(
           'Error obteniendo historial: ${response.statusCode} - ${response.body}',
@@ -84,16 +71,34 @@ class DiagnosticoProvider with ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Error cargando historial: $e';
-      print('❌ Error en cargarHistorial: $e');
+      print('Error en cargarHistorial: $e');
     } finally {
       _isLoadingHistorial = false;
       notifyListeners();
     }
   }
 
+  Future<Map<String, dynamic>> testUrlImagen(int diagnosticoId) async {
+    try {
+      final response = await ApiService.get(
+        '/api/diagnosticos/test-url/$diagnosticoId',
+      );
+
+      if (response.statusCode == 200) {
+        final result = json.decode(response.body);
+        print('Test URL Result: $result');
+        return result;
+      } else {
+        throw Exception('Error testeando URL: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error testeando URL: $e');
+      rethrow;
+    }
+  }
+
   Future<void> cargarMasDiagnosticos() async {
     if (_hasMore && !_isLoadingHistorial) {
-      _currentPage++;
       await cargarHistorial(loadMore: true);
     }
   }
@@ -111,13 +116,13 @@ class DiagnosticoProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         _diagnosticoDetalle = DiagnosticoDetalle.fromJson(jsonResponse);
-        print('✅ Detalle cargado para diagnóstico ID: $diagnosticoId');
+        print('Detalle cargado para diagnóstico ID: $diagnosticoId');
       } else {
         throw Exception('Error obteniendo detalle: ${response.statusCode}');
       }
     } catch (e) {
       _errorMessage = 'Error cargando detalle: $e';
-      print('❌ Error en cargarDetalleDiagnostico: $e');
+      print('Error en cargarDetalleDiagnostico: $e');
       rethrow;
     } finally {
       _isLoadingDetalle = false;

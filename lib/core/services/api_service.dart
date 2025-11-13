@@ -43,14 +43,12 @@ class ApiService {
     return prefs.getString('authToken');
   }
 
-  // CORREGIDO: Método GET con parámetros de query
   static Future<http.Response> get(
     String endpoint, {
     Map<String, String>? queryParams,
   }) async {
     final token = await _getToken();
 
-    // Construir URI con parámetros de query
     Uri uri = Uri.parse('$baseUrl$endpoint');
     if (queryParams != null && queryParams.isNotEmpty) {
       uri = uri.replace(queryParameters: queryParams);
