@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/providers/auth_provider.dart';
-import '../auth/login_auth.dart';
-import '../paciente/historial_diagnosticos.dart';
-import '../paciente/subir_imagen.dart';
-import '../paciente/dashboard_paciente.dart';
-import '../doctor/dashboard_doctor.dart';
-import '../admin/dashboard_admin.dart';
+import '../../features/admin/historial_completo.dart';
+import '../../features/auth/login_auth.dart';
+import '../../features/citas/gestion_citas.dart';
+import '../../features/paciente/historial_diagnosticos.dart';
+import '../../features/paciente/subir_imagen.dart';
+import '../../features/paciente/dashboard_paciente.dart';
+import '../../features/doctor/dashboard_doctor.dart';
+import '../../features/admin/dashboard_admin.dart';
 import 'settings.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -14,10 +16,10 @@ class MainDrawer extends StatelessWidget {
   final String currentUserName;
 
   const MainDrawer({
-    Key? key,
+    super.key,
     required this.currentRole,
     required this.currentUserName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +110,17 @@ class MainDrawer extends StatelessWidget {
                 // Pendiente: Navegar a agenda
               },
             ),
+            _buildDrawerItem(
+              icon: Icons.calendar_today,
+              title: 'Mis Citas',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => GestionCitas()),
+                );
+              },
+            ),
           ],
 
           // Gestión de usuarios
@@ -126,6 +139,28 @@ class MainDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 // Pendiente: Navegar a estadísticas
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.history,
+              title: 'Historial Completo',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => HistorialCompletoAdmin()),
+                );
+              },
+            ),
+            _buildDrawerItem(
+              icon: Icons.assignment,
+              title: 'Gestión de Citas',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => GestionCitas()),
+                );
               },
             ),
           ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../shared/custom_drawer.dart';
+import '../../core/widgets/custom_drawer.dart';
 import 'subir_imagen.dart';
 import '../../data/providers/auth_provider.dart';
 

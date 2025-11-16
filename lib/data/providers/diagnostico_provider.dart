@@ -37,7 +37,7 @@ class DiagnosticoProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        print('🔍 Response completo: $responseData');
+        print(' Response completo: $responseData');
 
         // formato de respuesta
         if (responseData is Map<String, dynamic>) {
@@ -53,7 +53,7 @@ class DiagnosticoProvider with ChangeNotifier {
             }
 
             // Debug de URLs
-            print('🖼️ URLs de imágenes encontradas:');
+            print(' URLs de imágenes encontradas:');
             for (var i = 0; i < _diagnosticos.length; i++) {
               final diagnostico = _diagnosticos[i];
               print(

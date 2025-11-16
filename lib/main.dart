@@ -6,6 +6,9 @@ import 'core/widgets/splash_screen.dart';
 import 'data/providers/auth_provider.dart';
 import 'data/providers/theme_provider.dart';
 import 'data/providers/diagnostico_provider.dart';
+import 'data/providers/admin_provider.dart';
+import 'data/providers/medico_provider.dart';
+import 'data/providers/citas_provider.dart';
 
 import 'features/auth/login_auth.dart';
 import 'features/admin/dashboard_admin.dart';
@@ -26,6 +29,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => DiagnosticoProvider()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
+        ChangeNotifierProvider(create: (_) => MedicoProvider()),
+        ChangeNotifierProvider(create: (_) => CitasProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {

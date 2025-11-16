@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/providers/theme_provider.dart';
 import '../../data/providers/auth_provider.dart';
-import '../auth/login_auth.dart';
+import '../../features/auth/login_auth.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});

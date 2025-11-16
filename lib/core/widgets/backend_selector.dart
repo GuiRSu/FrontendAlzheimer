@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class BackendSelector extends StatefulWidget {
-  const BackendSelector({Key? key}) : super(key: key);
+  const BackendSelector({super.key});
 
   @override
   State<BackendSelector> createState() => _BackendSelectorState();
