@@ -90,6 +90,17 @@ class MainDrawer extends StatelessWidget {
                 );
               },
             ),
+            _buildDrawerItem(
+              icon: Icons.calendar_today,
+              title: 'Mis Citas',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const GestionCitas()),
+                );
+              },
+            ),
           ],
 
           // Gestión de pacientes

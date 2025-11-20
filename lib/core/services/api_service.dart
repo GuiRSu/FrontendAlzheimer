@@ -80,6 +80,47 @@ class ApiService {
     );
   }
 
+  static Future<http.Response> put(
+    String endpoint,
+    Map<String, dynamic> data,
+  ) async {
+    final token = await _getToken();
+    return await http.put(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(data),
+    );
+  }
+
+  static Future<http.Response> patch(
+    String endpoint,
+    Map<String, dynamic> data,
+  ) async {
+    final token = await _getToken();
+    return await http.patch(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(data),
+    );
+  }
+
+  static Future<http.Response> delete(String endpoint) async {
+    final token = await _getToken();
+    return await http.delete(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+  }
+
   static Future<http.Response> multipartRequest(
     String endpoint,
     File imageFile,

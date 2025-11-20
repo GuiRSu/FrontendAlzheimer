@@ -34,6 +34,9 @@ class UserResponse {
   final String? apellido;
   final String? email;
   final String? telefono;
+  final int? pacienteId;
+  final int? medicoId;
+  final int? adminId;
 
   UserResponse({
     required this.id,
@@ -46,6 +49,9 @@ class UserResponse {
     this.apellido,
     this.email,
     this.telefono,
+    this.pacienteId,
+    this.medicoId,
+    this.adminId,
   });
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
@@ -60,6 +66,9 @@ class UserResponse {
       apellido: json['apellido'],
       email: json['email'],
       telefono: json['telefono'],
+      pacienteId: json['paciente_id'],
+      medicoId: json['medico_id'],
+      adminId: json['admin_id'],
     );
   }
 }
@@ -125,7 +134,6 @@ class RegisterRequest {
     if (direccion != null) map['direccion'] = direccion!;
     if (ciudad != null) map['ciudad'] = ciudad!;
     if (estadoAlzheimer != null) map['estado_alzheimer'] = estadoAlzheimer!;
-    if (relacionPaciente != null) map['relacion_paciente'] = relacionPaciente!;
     if (cmp != null) map['cmp'] = cmp!;
     if (especialidad != null) map['especialidad'] = especialidad!;
     if (hospitalAfiliacion != null)

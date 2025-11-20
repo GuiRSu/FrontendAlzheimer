@@ -25,7 +25,6 @@ class _RegisterState extends State<Register> {
   final _numeroIdentidadController = TextEditingController();
   final _direccionController = TextEditingController();
   final _ciudadController = TextEditingController();
-  final _relacionPacienteController = TextEditingController();
   final _cmpController = TextEditingController();
   final _especialidadController = TextEditingController();
   final _hospitalController = TextEditingController();
@@ -40,12 +39,11 @@ class _RegisterState extends State<Register> {
   // Listas para dropdowns
   final List<String> _tiposUsuario = [
     "paciente",
-    "cuidador",
     "medico",
     "admin",
   ];
   final List<String> _generos = ["Masculino", "Femenino", "Otro"];
-  final List<String> _estadosAlzheimer = ["independiente", "con_cuidador"];
+  final List<String> _estadosAlzheimer = ["independiente", "dependiente"];
   final List<String> _nivelesAcceso = ["total", "limitado"];
 
   Widget _buildTipoUsuarioField() {
@@ -150,25 +148,6 @@ class _RegisterState extends State<Register> {
                 labelText: "Estado Alzheimer",
                 border: OutlineInputBorder(),
               ),
-            ),
-          ],
-        );
-
-      case "cuidador":
-        return Column(
-          children: [
-            TextFormField(
-              controller: _relacionPacienteController,
-              decoration: InputDecoration(
-                labelText: "Relación con el Paciente",
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'La relación con el paciente es obligatoria para cuidadores';
-                }
-                return null;
-              },
             ),
           ],
         );
@@ -292,9 +271,6 @@ class _RegisterState extends State<Register> {
             ? null
             : _ciudadController.text.trim(),
         estadoAlzheimer: _selectedEstadoAlzheimer,
-        relacionPaciente: _relacionPacienteController.text.trim().isEmpty
-            ? null
-            : _relacionPacienteController.text.trim(),
         cmp: _cmpController.text.trim().isEmpty
             ? null
             : _cmpController.text.trim(),
@@ -518,7 +494,6 @@ class _RegisterState extends State<Register> {
     _numeroIdentidadController.dispose();
     _direccionController.dispose();
     _ciudadController.dispose();
-    _relacionPacienteController.dispose();
     _cmpController.dispose();
     _especialidadController.dispose();
     _hospitalController.dispose();

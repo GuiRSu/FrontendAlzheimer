@@ -10,12 +10,18 @@ class AuthProvider with ChangeNotifier {
   bool _isLoggedIn = false;
   String _userRole = '';
   String _userName = '';
+  int? _pacienteId;
+  int? _medicoId;
+  int? _adminId;
 
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   bool get isLoggedIn => _isLoggedIn;
   String get userRole => _userRole;
   String get userName => _userName;
+  int? get pacienteId => _pacienteId;
+  int? get medicoId => _medicoId;
+  int? get adminId => _adminId;
 
   AuthProvider() {
     _loadAuthStatus();
@@ -27,6 +33,9 @@ class AuthProvider with ChangeNotifier {
       _isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
       _userRole = prefs.getString('userRole') ?? '';
       _userName = prefs.getString('userName') ?? '';
+      _pacienteId = prefs.getInt('pacienteId');
+      _medicoId = prefs.getInt('medicoId');
+      _adminId = prefs.getInt('adminId');
       notifyListeners();
     } catch (e) {
       print('Error loading auth status: $e');
@@ -84,9 +93,23 @@ class AuthProvider with ChangeNotifier {
     await prefs.setString('userName', user.nombre ?? user.username);
     await prefs.setString('authToken', token);
 
+    // Guardar IDs de perfil
+    if (user.pacienteId != null) {
+      await prefs.setInt('pacienteId', user.pacienteId!);
+    }
+    if (user.medicoId != null) {
+      await prefs.setInt('medicoId', user.medicoId!);
+    }
+    if (user.adminId != null) {
+      await prefs.setInt('adminId', user.adminId!);
+    }
+
     _isLoggedIn = true;
     _userRole = _mapUserType(user.tipoUsuario);
     _userName = user.nombre ?? user.username;
+    _pacienteId = user.pacienteId;
+    _medicoId = user.medicoId;
+    _adminId = user.adminId;
   }
 
   Future<bool> register(RegisterRequest request) async {
@@ -125,8 +148,6 @@ class AuthProvider with ChangeNotifier {
         return 'Doctor';
       case 'admin':
         return 'Admin';
-      case 'cuidador':
-        return 'Cuidador';
       default:
         return 'Paciente';
     }
@@ -139,6 +160,9 @@ class AuthProvider with ChangeNotifier {
     _isLoggedIn = false;
     _userRole = '';
     _userName = '';
+    _pacienteId = null;
+    _medicoId = null;
+    _adminId = null;
     _errorMessage = '';
     notifyListeners();
   }

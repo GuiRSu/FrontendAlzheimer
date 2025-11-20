@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../data/providers/citas_provider.dart';
+import '../../data/models/cita_model.dart';
+import 'formulario_cita.dart';
+import 'detalle_cita.dart';
 
 class GestionCitas extends StatefulWidget {
   const GestionCitas({super.key});
@@ -30,7 +33,7 @@ class _GestionCitasState extends State<GestionCitas> {
   }
 
   void _aplicarFiltros() {
-    _currentPage = 1;
+    setState(() => _currentPage = 1);
     final provider = Provider.of<CitasProvider>(context, listen: false);
     provider.cargarCitas(
       medicoId: _medicoSeleccionado,
@@ -42,56 +45,172 @@ class _GestionCitasState extends State<GestionCitas> {
   }
 
   void _limpiarFiltros() {
-    _medicoSeleccionado = null;
-    _filtroEstado = 'todos';
+    setState(() {
+      _medicoSeleccionado = null;
+      _filtroEstado = 'todos';
+      _currentPage = 1;
+    });
     _fechaController.clear();
-    _currentPage = 1;
     _cargarDatosIniciales();
+  }
+
+  void _cambiarPagina(int nuevaPagina) {
+    setState(() => _currentPage = nuevaPagina);
+    final provider = Provider.of<CitasProvider>(context, listen: false);
+    provider.cargarCitas(
+      medicoId: _medicoSeleccionado,
+      estado: _filtroEstado == 'todos' ? null : _filtroEstado,
+      fechaDesde: _fechaController.text.isEmpty ? null : _fechaController.text,
+      page: _currentPage,
+      limit: _limit,
+    );
+  }
+
+  Future<void> _seleccionarFecha() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      locale: const Locale('es', 'ES'),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _fechaController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
+  Future<void> _crearCita() async {
+    final resultado = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const FormularioCita()),
+    );
+
+    if (resultado == true) {
+      _cargarDatosIniciales();
+    }
+  }
+
+  Future<void> _verDetalle(CitaModel cita) async {
+    final resultado = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetalleCita(citaId: cita.id),
+      ),
+    );
+
+    if (resultado == true) {
+      _cargarDatosIniciales();
+    }
+  }
+
+  Color _getColorPorEstado(String estado) {
+    switch (estado) {
+      case 'programada':
+        return Colors.blue;
+      case 'completada':
+        return Colors.green;
+      case 'cancelada':
+        return Colors.red;
+      case 'reprogramada':
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getIconPorEstado(String estado) {
+    switch (estado) {
+      case 'programada':
+        return Icons.schedule;
+      case 'completada':
+        return Icons.check_circle;
+      case 'cancelada':
+        return Icons.cancel;
+      case 'reprogramada':
+        return Icons.update;
+      default:
+        return Icons.info;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final citasProvider = Provider.of<CitasProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestión de Citas'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _mostrarDialogoCrearCita,
+            icon: const Icon(Icons.refresh),
+            onPressed: _cargarDatosIniciales,
+            tooltip: 'Actualizar',
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Filtros
-          _buildFiltros(citasProvider),
-          const SizedBox(height: 8),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _crearCita,
+        icon: const Icon(Icons.add),
+        label: const Text('Nueva Cita'),
+      ),
+      body: Consumer<CitasProvider>(
+        builder: (context, provider, child) {
+          return Column(
+            children: [
+              // Filtros
+              _buildFiltros(provider),
+              const Divider(height: 1),
 
-          // Lista de citas
-          Expanded(child: _buildListaCitas(citasProvider)),
-        ],
+              // Lista de citas
+              Expanded(child: _buildListaCitas(provider)),
+
+              // Paginación
+              if (provider.totalPages > 1) _buildPaginacion(provider),
+            ],
+          );
+        },
       ),
     );
   }
 
   Widget _buildFiltros(CitasProvider provider) {
     return Card(
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.all(12),
+      elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
+                const Icon(Icons.filter_list, color: Colors.blue),
+                const SizedBox(width: 8),
+                const Text(
+                  'Filtros',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
                 Expanded(
+                  flex: 2,
                   child: DropdownButtonFormField<int?>(
                     value: _medicoSeleccionado,
                     decoration: const InputDecoration(
                       labelText: 'Médico',
                       border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.local_hospital),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     ),
+                    isExpanded: true,
                     items: [
                       const DropdownMenuItem(
                         value: null,
@@ -99,27 +218,29 @@ class _GestionCitasState extends State<GestionCitas> {
                       ),
                       ...provider.medicos.map((medico) {
                         return DropdownMenuItem(
-                          value: medico['id'],
+                          value: medico.id,
                           child: Text(
-                            'Dr. ${medico['nombre']} ${medico['apellido']}',
+                            'Dr. ${medico.nombreCompleto}',
+                            overflow: TextOverflow.ellipsis,
                           ),
                         );
                       }),
                     ],
                     onChanged: (value) {
-                      setState(() {
-                        _medicoSeleccionado = value;
-                      });
+                      setState(() => _medicoSeleccionado = value);
                     },
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: _filtroEstado,
                     decoration: const InputDecoration(
                       labelText: 'Estado',
                       border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.info_outline),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     ),
                     items: const [
                       DropdownMenuItem(value: 'todos', child: Text('Todos')),
@@ -135,48 +256,58 @@ class _GestionCitasState extends State<GestionCitas> {
                         value: 'cancelada',
                         child: Text('Cancelada'),
                       ),
+                      DropdownMenuItem(
+                        value: 'reprogramada',
+                        child: Text('Reprogramada'),
+                      ),
                     ],
                     onChanged: (value) {
-                      setState(() {
-                        _filtroEstado = value!;
-                      });
+                      setState(() => _filtroEstado = value!);
                     },
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
                     controller: _fechaController,
                     decoration: const InputDecoration(
-                      labelText: 'Fecha',
-                      hintText: 'YYYY-MM-DD',
+                      labelText: 'Fecha desde',
+                      hintText: 'Seleccionar fecha',
                       border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.calendar_today),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     ),
-                    onTap: () => _seleccionarFecha(),
+                    readOnly: true,
+                    onTap: _seleccionarFecha,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton.icon(
+                  onPressed: provider.isLoading ? null : _aplicarFiltros,
+                  icon: const Icon(Icons.search),
+                  label: const Text('Buscar'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: _aplicarFiltros,
-                          icon: const Icon(Icons.search),
-                          label: const Text('Filtrar'),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      OutlinedButton.icon(
-                        onPressed: _limpiarFiltros,
-                        icon: const Icon(Icons.clear),
-                        label: const Text('Limpiar'),
-                      ),
-                    ],
+                OutlinedButton.icon(
+                  onPressed: provider.isLoading ? null : _limpiarFiltros,
+                  icon: const Icon(Icons.clear),
+                  label: const Text('Limpiar'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
                   ),
                 ),
               ],
@@ -192,286 +323,244 @@ class _GestionCitasState extends State<GestionCitas> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    if (provider.errorMessage.isNotEmpty && provider.citas.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(
+              'Error al cargar citas',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(provider.errorMessage),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _cargarDatosIniciales,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Reintentar'),
+            ),
+          ],
+        ),
+      );
+    }
+
     if (provider.citas.isEmpty) {
-      return const Center(child: Text('No se encontraron citas'));
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.event_busy, size: 64, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              'No se encontraron citas',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            const Text('Intenta con otros filtros o crea una nueva cita'),
+          ],
+        ),
+      );
     }
 
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            '${provider.citas.length} citas encontradas',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Text(
+                'Total: ${provider.total} citas',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                'Página $_currentPage de ${provider.totalPages}',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+            ],
           ),
         ),
         Expanded(
           child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             itemCount: provider.citas.length,
             itemBuilder: (context, index) {
               final cita = provider.citas[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: _getColorPorEstado(cita['estado']),
-                    child: Icon(
-                      _getIconPorEstado(cita['estado']),
-                      color: Colors.white,
-                    ),
-                  ),
-                  title: Text(
-                    '${cita['paciente_nombre']} ${cita['paciente_apellido']}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Médico: Dr. ${cita['medico_nombre']} ${cita['medico_apellido']}',
-                      ),
-                      Text(
-                        'Fecha: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(cita['fecha_hora']))}',
-                      ),
-                      Text('Estado: ${_capitalizar(cita['estado'])}'),
-                      if (cita['motivo'] != null)
-                        Text('Motivo: ${cita['motivo']}'),
-                    ],
-                  ),
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (accion) => _manejarAccionCita(accion, cita),
-                    itemBuilder: (context) => _buildMenuCitas(cita['estado']),
-                  ),
-                ),
-              );
+              return _buildCitaCard(cita);
             },
           ),
         ),
-
-        // Paginación
-        _buildPaginacion(provider),
       ],
     );
   }
 
-  List<PopupMenuEntry<String>> _buildMenuCitas(String estado) {
-    final menuItems = <PopupMenuEntry<String>>[];
+  Widget _buildCitaCard(CitaModel cita) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      child: InkWell(
+        onTap: () => _verDetalle(cita),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // Indicador de estado
+              Container(
+                width: 4,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: _getColorPorEstado(cita.estado),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 16),
 
-    menuItems.add(
-      const PopupMenuItem(
-        value: 'detalle',
-        child: ListTile(leading: Icon(Icons.info), title: Text('Ver Detalle')),
+              // Icono
+              CircleAvatar(
+                radius: 24,
+                backgroundColor:
+                    _getColorPorEstado(cita.estado).withAlpha(51),
+                child: Icon(
+                  _getIconPorEstado(cita.estado),
+                  color: _getColorPorEstado(cita.estado),
+                ),
+              ),
+              const SizedBox(width: 16),
+
+              // Información
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Paciente
+                    Text(
+                      cita.pacienteNombreCompleto,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Médico
+                    Row(
+                      children: [
+                        Icon(Icons.local_hospital,
+                            size: 14, color: Colors.grey[600]),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            'Dr. ${cita.medicoNombreCompleto}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Fecha y hora
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_today,
+                            size: 14, color: Colors.grey[600]),
+                        const SizedBox(width: 4),
+                        Text(
+                          DateFormat('dd/MM/yyyy HH:mm', 'es')
+                              .format(cita.fechaHora),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Estado
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getColorPorEstado(cita.estado).withAlpha(25),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _getColorPorEstado(cita.estado),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        cita.estadoFormatted,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: _getColorPorEstado(cita.estado),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Botón ver detalle
+              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
+            ],
+          ),
+        ),
       ),
     );
-
-    if (estado == 'programada') {
-      menuItems.add(
-        const PopupMenuItem(
-          value: 'reprogramar',
-          child: ListTile(
-            leading: Icon(Icons.schedule),
-            title: Text('Reprogramar'),
-          ),
-        ),
-      );
-      menuItems.add(
-        const PopupMenuItem(
-          value: 'cancelar',
-          child: ListTile(leading: Icon(Icons.cancel), title: Text('Cancelar')),
-        ),
-      );
-    }
-
-    if (estado == 'programada' || estado == 'reprogramada') {
-      menuItems.add(
-        const PopupMenuItem(
-          value: 'completar',
-          child: ListTile(
-            leading: Icon(Icons.check_circle),
-            title: Text('Marcar Completada'),
-          ),
-        ),
-      );
-    }
-
-    return menuItems;
-  }
-
-  void _manejarAccionCita(String accion, Map<String, dynamic> cita) {
-    switch (accion) {
-      case 'detalle':
-        _mostrarDetalleCita(cita);
-        break;
-      case 'reprogramar':
-        _mostrarDialogoReprogramarCita(cita);
-        break;
-      case 'cancelar':
-        _cancelarCita(cita);
-        break;
-      case 'completar':
-        _completarCita(cita);
-        break;
-    }
   }
 
   Widget _buildPaginacion(CitasProvider provider) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        border: Border(top: BorderSide(color: Colors.grey[300]!)),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: _currentPage > 1
-                ? () {
-                    _currentPage--;
-                    _aplicarFiltros();
-                  }
+            onPressed: _currentPage > 1 && !provider.isLoading
+                ? () => _cambiarPagina(_currentPage - 1)
                 : null,
+            icon: const Icon(Icons.chevron_left),
           ),
-          Text('Página $_currentPage'),
+          const SizedBox(width: 8),
+          Text(
+            'Página $_currentPage de ${provider.totalPages}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(width: 8),
           IconButton(
-            icon: const Icon(Icons.arrow_forward),
-            onPressed: provider.citas.length == _limit
-                ? () {
-                    _currentPage++;
-                    _aplicarFiltros();
-                  }
-                : null,
+            onPressed:
+                _currentPage < provider.totalPages && !provider.isLoading
+                    ? () => _cambiarPagina(_currentPage + 1)
+                    : null,
+            icon: const Icon(Icons.chevron_right),
           ),
         ],
       ),
     );
   }
 
-  Color _getColorPorEstado(String estado) {
-    switch (estado) {
-      case 'programada':
-        return Colors.blue;
-      case 'completada':
-        return Colors.green;
-      case 'cancelada':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  IconData _getIconPorEstado(String estado) {
-    switch (estado) {
-      case 'programada':
-        return Icons.schedule;
-      case 'completada':
-        return Icons.check_circle;
-      case 'cancelada':
-        return Icons.cancel;
-      default:
-        return Icons.help;
-    }
-  }
-
-  String _capitalizar(String texto) {
-    if (texto.isEmpty) return texto;
-    return texto[0].toUpperCase() + texto.substring(1);
-  }
-
-  Future<void> _seleccionarFecha() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (picked != null) {
-      _fechaController.text = DateFormat('yyyy-MM-dd').format(picked);
-    }
-  }
-
-  void _mostrarDialogoCrearCita() {
-    // Implementar diálogo para crear nueva cita
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Nueva Cita'),
-        content: const Text('Funcionalidad en desarrollo...'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _mostrarDetalleCita(Map<String, dynamic> cita) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Detalle de Cita'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Paciente: ${cita['paciente_nombre']} ${cita['paciente_apellido']}',
-              ),
-              Text(
-                'Médico: Dr. ${cita['medico_nombre']} ${cita['medico_apellido']}',
-              ),
-              Text(
-                'Fecha: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(cita['fecha_hora']))}',
-              ),
-              Text('Estado: ${_capitalizar(cita['estado'])}'),
-              if (cita['motivo'] != null) Text('Motivo: ${cita['motivo']}'),
-              if (cita['notas'] != null) Text('Notas: ${cita['notas']}'),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _mostrarDialogoReprogramarCita(Map<String, dynamic> cita) {
-    // Implementar reprogramación de cita
-  }
-
-  void _cancelarCita(Map<String, dynamic> cita) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Cancelar Cita'),
-        content: const Text('¿Estás seguro de que quieres cancelar esta cita?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('No'),
-          ),
-          TextButton(
-            onPressed: () {
-              // Lógica para cancelar cita
-              Navigator.pop(context);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Cita cancelada')));
-            },
-            child: const Text('Sí, cancelar'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _completarCita(Map<String, dynamic> cita) {
-    // Lógica para marcar cita como completada
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Cita marcada como completada')),
-    );
+  @override
+  void dispose() {
+    _fechaController.dispose();
+    super.dispose();
   }
 }
+

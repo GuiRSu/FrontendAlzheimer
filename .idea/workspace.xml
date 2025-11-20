@@ -5,12 +5,37 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a8184cde-763e-49b5-99f5-e5716329e8e7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/BACKEND_API_REQUIREMENTS.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DASHBOARD_ADMIN_README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DASHBOARD_TESTING_CHECKLIST.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GUIA_RAPIDA_PRUEBA.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/INTEGRACION_CITAS_PACIENTE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/LIMPIEZA_CUIDADOR_COMPLETADA.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MODULO_CITAS_README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SOLUCION_CREAR_CITAS.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/data/models/cita_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/data/models/dashboard_models.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/features/admin/estadisticas_detalladas.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/features/citas/detalle_cita.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/features/citas/formulario_cita.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/providers/diagnostico_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/providers/diagnostico_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/paciente/historial_diagnosticos.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/paciente/historial_diagnosticos.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/services/api_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/services/api_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/widgets/custom_drawer.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/widgets/custom_drawer.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/auth_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/auth_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/providers/admin_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/providers/admin_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/providers/auth_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/providers/auth_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/providers/citas_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/providers/citas_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/admin/dashboard_admin.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/admin/dashboard_admin.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/auth/register_auth.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/auth/register_auth.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/citas/gestion_citas.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/citas/gestion_citas.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/paciente/dashboard_paciente.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/paciente/dashboard_paciente.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/paciente/diagnostico_resultado.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/paciente/diagnostico_resultado.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,6 +61,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;cenixeriadev&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/GuiRSu/FrontendAlzheimer.git&quot;,
+    &quot;accountId&quot;: &quot;78680d95-3de9-4fc0-bc53-f3a0ecf737de&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -52,21 +89,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Guillermo/Documents/GitHub/alzheimer_cnn_app/frontendalzheimer&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.main.dart.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Guillermo/Documents/GitHub/alzheimer_cnn_app/frontendalzheimer",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "show.migrate.to.gradle.popup": "false"
   }
-}</component>
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="a8184cde-763e-49b5-99f5-e5716329e8e7" name="Changes" comment="" />
@@ -82,5 +124,24 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
     </layout>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

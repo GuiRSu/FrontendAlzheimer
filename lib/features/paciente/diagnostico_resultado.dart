@@ -205,7 +205,7 @@ class DiagnosticoResultado extends StatelessWidget {
                     _buildRecommendationItem(
                       Icons.people,
                       "Apoyo y comunicación",
-                      "Mantén comunicación constante con tu cuidador y familia",
+                      "Mantén comunicación constante con tu médico y familia",
                     ),
                     _buildRecommendationItem(
                       Icons.self_improvement,
